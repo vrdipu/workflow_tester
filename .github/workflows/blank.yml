@@ -1,0 +1,54 @@
+name: AWS IAM Role Workflow
+
+on:
+  workflow_dispatch:
+    inputs:
+      aws_iam_role_obs_deployment:
+        description: 'AWS IAM role for OBS deployment'
+        required: true
+      aws_iam_role_github_connectivity:
+        description: 'AWS IAM role for GitHub Connectivity'
+        required: true
+      splunk_token_arn:
+        description: 'SplunkToken ARN'
+        required: true
+      cribl_key_arn:
+        description: 'Criblkey ARN'
+        required: true
+      cribl_cert_arn:
+        description: 'CRIBLcert ARN'
+        required: true
+      registry_token_arn:
+        description: 'Registry Token ARN'
+        required: true
+      cert_manager_configured:
+        description: 'IS cert-manager configured'
+        required: true
+        type: boolean
+      pca_issuer_deployed:
+        description: 'IS PCA issuer deployed'
+        required: true
+        type: boolean
+
+jobs:
+  send-email:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Send Email
+      uses: dawidd6/action-send-mail@v3
+      with:
+        server_address: smtp.gmail.com
+        server_port: 465
+        username: ${{ secrets.EMAIL_USERNAME }}
+        password: ${{ secrets.EMAIL_PASSWORD }}
+        subject: AWS IAM Role Workflow Details
+        to: ml_test@test.com
+        body: |
+          AWS IAM role for OBS deployment: ${{ github.event.inputs.aws_iam_role_obs_deployment }}
+          AWS IAM role For GitHub Connectivity: ${{ github.event.inputs.aws_iam_role_github_connectivity }}
+          SplunkToken ARN: ${{ github.event.inputs.splunk_token_arn }}
+          Criblkey ARN: ${{ github.event.inputs.cribl_key_arn }}
+          CRIBLcert ARN: ${{ github.event.inputs.cribl_cert_arn }}
+          Registry Token ARN: ${{ github.event.inputs.registry_token_arn }}
+          IS cert-manager configured: ${{ github.event.inputs.cert_manager_configured }}
+          IS PCA issuer deployed: ${{ github.event.inputs.pca_issuer_deployed }}
